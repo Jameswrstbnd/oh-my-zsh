@@ -21,10 +21,12 @@ zstyle -s ':omz:update' mode update_mode || {
 # Cancel update if:
 # - the automatic update is disabled.
 # - the current user doesn't have write permissions nor owns the $ZSH directory.
+# - is not run from a tty
 # - git is unavailable on the system.
 if [[ "$update_mode" = disabled ]] \
    || [[ ! -w "$ZSH" || ! -O "$ZSH" ]] \
-   || ! command -v git &>/dev/null; then
+   || [[ ! -t 1 ]] \
+   || ! command git --version 2>&1 >/dev/null; then
   unset update_mode
   return
 fi
@@ -65,7 +67,7 @@ function is_update_available() {
   local remote_head
   remote_head=$(
     if (( ${+commands[curl]} )); then
-      curl -m 2 -fsSL -H 'Accept: application/vnd.github.v3.sha' $api_url 2>/dev/null
+      curl --connect-timeout 2 -fsSL -H 'Accept: application/vnd.github.v3.sha' $api_url 2>/dev/null
     elif (( ${+commands[wget]} )); then
       wget -T 2 -O- --header='Accept: application/vnd.github.v3.sha' $api_url 2>/dev/null
     elif (( ${+commands[fetch]} )); then

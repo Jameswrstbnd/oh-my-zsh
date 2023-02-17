@@ -56,7 +56,7 @@ function takegit() {
 }
 
 function take() {
-  if [[ $1 =~ ^(https?|ftp).*\.tar\.(gz|bz2|xz)$ ]]; then
+  if [[ $1 =~ ^(https?|ftp).*\.(tar\.(gz|bz2|xz)|tgz)$ ]]; then
     takeurl "$1"
   elif [[ $1 =~ ^([A-Za-z0-9]\+@|https?|git|ssh|ftps?|rsync).*\.git/?$ ]]; then
     takegit "$1"
@@ -144,7 +144,7 @@ zmodload zsh/langinfo
 # Returns nonzero if encoding failed.
 #
 # Usage:
-#  omz_urlencode [-r] [-m] [-P] <string>
+#  omz_urlencode [-r] [-m] [-P] <string> [<string> ...]
 #
 #    -r causes reserved characters (;/?:@&=+$,) to be escaped
 #
@@ -156,7 +156,7 @@ function omz_urlencode() {
   local -a opts
   zparseopts -D -E -a opts r m P
 
-  local in_str=$1
+  local in_str="$@"
   local url_str=""
   local spaces_as_plus
   if [[ -z $opts[(r)-P] ]]; then spaces_as_plus=1; fi
